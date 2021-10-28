@@ -31,7 +31,7 @@ public class Main {
 
     static void mainMenu() throws FileNotFoundException {
 
-        System.out.print("Please enter you name: ");
+        System.out.print("Please enter your name: ");
         String name = scan.nextLine();
         player1 = new Player(name, 1);
 
@@ -237,6 +237,7 @@ public class Main {
 
 
     public static void main(String[] args) throws FileNotFoundException {
+
 
         game = new GameState(newGame, player1);
         mainMenu();

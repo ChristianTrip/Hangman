@@ -46,13 +46,13 @@ public class Player {
     }
 
     public void addPoints(int points){
-        if (points > 0){
+        if (this.points > 0){
             this.points += points;
         }
     }
 
     public void resetPoints(){
-        this.points = 0;
+        this.points = 1;
     }
 
     public char getCurrentLetterGuess(){

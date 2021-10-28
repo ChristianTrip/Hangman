@@ -100,12 +100,16 @@ public class HangMan {
             }
             for (int j = 0; j < hangManWord.length(); j++) {
                 if (player.getCurrentLetterGuess() == (hangManWord.charAt(j))) {
-                    wordState.set(j, hangManWord.charAt(j));
                     if(!isVowel(player.getCurrentLetterGuess())){
                         player.addPoints(1);
+                        wordState.set(j, hangManWord.charAt(j));
                     }
                     else if(isVowel(player.getCurrentLetterGuess()) && player.getPoints() > 0){
                         player.addPoints(-1);
+                        wordState.set(j, hangManWord.charAt(j));
+                    }
+                    else if(isVowel(player.getCurrentLetterGuess()) && player.getPoints() == 0){
+                        System.out.println("You dont have any points to buy a vowel");
                     }
                     count ++;
                 }
