@@ -1,0 +1,2 @@
+PLAYER CLASS => |Name|Points|NumOfGuesses| & HANGMAN CLASS =>|hangManWordwrongLetterGuesses|wordState|numOfgamesPlayed|
+Trip;1;8;enemy; rasi;e_e_y;1
