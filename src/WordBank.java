@@ -9,7 +9,7 @@ public class WordBank {
     private Scanner scan;
 
     private String[] wordBank;
-    private String filePathName = "resources/Wordbank5LettersAndMore.csv";
+    private String filePathName = "resources/Wordbank3To14Letters.csv";
 
 
     // CONSTRUCTORS ==================================================
