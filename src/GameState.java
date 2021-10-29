@@ -21,37 +21,51 @@ public class GameState {
     }
 
 
+    // GETTERS & SETTERS ================================================
+
+
+    public HangMan getGame() {
+        return game;
+    }
+
+    public Player getPlayer() {
+        return player;
+    }
+
     // PUBLIC METHODS ================================================
-    public void saveGameState() throws FileNotFoundException {
+    public void saveGameState() {
+        try {
+            csvFile = new File(filePathName);
+            PrintWriter write = new PrintWriter(csvFile);
 
-        csvFile = new File(filePathName);
-        PrintWriter write = new PrintWriter(csvFile);
+            String wrongLetters = "";
+            for (Character letter : game.getWrongGuesses()) {
+                wrongLetters += letter;
+            }
 
-        String wrongLetters = "";
-        for (Character letter : game.getWrongGuesses()) {
-            wrongLetters += letter;
+
+            write.print("PLAYER CLASS => |Name|");
+            write.print("Points|");
+            write.print("NumOfGuesses|");
+            write.print(" & ");
+            write.print("HANGMAN CLASS =>|hangManWord|");
+            write.print("wrongLetterGuesses|");
+            write.print("wordState|");
+            write.print("numOfgamesPlayed|");
+            write.println();
+            write.print(player.getName() + ";");
+            write.print(player.getPoints() + ";");
+            write.print(player.getNumOfGuesses() + ";");
+            write.print(game.getHangManWord() + ";");
+            write.print(wrongLetters + ";");
+            write.print(game.getWordStateAsString() + ";");
+            write.print(game.getNumOfGamesPlayed());
+
+            write.close();
         }
-
-
-        write.print("PLAYER CLASS => |Name|");
-        write.print("Points|");
-        write.print("NumOfGuesses|");
-        write.print(" & ");
-        write.print("HANGMAN CLASS =>|hangManWord");
-        write.print("wrongLetterGuesses|");
-        write.print("wordState|");
-        write.print("numOfgamesPlayed|");
-        write.println();
-        write.print(player.getName() + ";");
-        write.print(player.getPoints() + ";");
-        write.print(player.getNumOfGuesses() + ";");
-        write.print(game.getHangManWord() + ";");
-        write.print(wrongLetters + ";");
-        write.print(game.getWordStateAsString() + ";");
-        write.print(game.getNumOfGamesPlayed());
-
-        write.close();
-
+        catch(FileNotFoundException e){
+            System.out.println("could not find file - please restart game");
+        }
 
     }
 
@@ -79,10 +93,11 @@ public class GameState {
 
                 Main main = new Main();
 
+
                 player = new Player(playerName, playerPoints);
                 player.setNumOfGuesses(plNumOFGuesses);
 
-                game = new HangMan(Main.player1, hangmanWord);
+                game = new HangMan(player, hangmanWord);
                 game.setHangManWord(hangmanWord);
                 game.setWrongGuesses(wrongLetters);
                 game.setWordState(wordState);

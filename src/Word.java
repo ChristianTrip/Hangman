@@ -43,7 +43,7 @@ public class Word {
         this.wordAsArray = word.toCharArray();
     }
 
-    private int getRandomNumber(int minValue, int maxValue){
+    static int getRandomNumber(int minValue, int maxValue){
         int randomNumber = (int)(Math.random()*(maxValue - minValue + 1) + minValue);
         return randomNumber;
     }

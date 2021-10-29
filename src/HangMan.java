@@ -15,7 +15,7 @@ public class HangMan {
     public HangMan(Player player, String hangManWord){  //Two player mode
         this.player = player;
         this.hangManWord = hangManWord;
-        setupWordState();
+        wordStateSetup();
         numOfGamesPlayed ++;
     }
 
@@ -66,7 +66,7 @@ public class HangMan {
         return toReturn;
     }
 
-    public void  setupWordState(){
+    public void wordStateSetup(){
         for (int i = 0; i < hangManWord.length(); i++) {
             wordState.add('_');
         }
@@ -89,9 +89,26 @@ public class HangMan {
         return false;
     }
 
-    // GUESS METHOD==================================================
-    public void setWordState(){
 
+    // GUESS METHOD==================================================
+    public void buyAletter(){
+
+        if (player.getPoints() != 0){
+
+            int randomNum = Word.getRandomNumber(0, wordState.size() - 1);
+            for (int i = 0; i < wordState.size(); i++) {
+                if (wordState.get(randomNum) == '_' && i == randomNum)
+
+                    player.setCurrentLetterGuess(hangManWord.charAt(i));
+            }
+            player.addPoints(-1);
+        }
+        else {
+            System.out.println("You dont have any points to buy for!");
+        }
+    }
+
+    public void setPlayerPoints(){
         int count = 0;
         for (int i = 0; i < 1; i++) {
             if (wordState.contains(player.getCurrentLetterGuess())){
@@ -100,30 +117,47 @@ public class HangMan {
             }
             for (int j = 0; j < hangManWord.length(); j++) {
                 if (player.getCurrentLetterGuess() == (hangManWord.charAt(j))) {
-                    if(!isVowel(player.getCurrentLetterGuess())){
-                        player.addPoints(1);
-                        wordState.set(j, hangManWord.charAt(j));
-                    }
-                    else if(isVowel(player.getCurrentLetterGuess()) && player.getPoints() > 0){
-                        player.addPoints(-1);
-                        wordState.set(j, hangManWord.charAt(j));
-                    }
-                    else if(isVowel(player.getCurrentLetterGuess()) && player.getPoints() == 0){
-                        System.out.println("You dont have any points to buy a vowel");
-                    }
+                    wordState.set(j, hangManWord.charAt(j));
                     count ++;
+                    if(!isVowel(wordState.get(j))){
+                        player.addPoints(1);
+                    }
                 }
+            }
+            if(!isVowel(player.getCurrentLetterGuess()) && !wordState.contains(player.getCurrentLetterGuess())){
+                player.addPoints(1);
             }
             if (count == 0 && !wrongGuesses.contains(player.getCurrentLetterGuess())) {
                 wrongGuesses.add(player.getCurrentLetterGuess());
+                player.addLives(-1);
             }
         }
+    }
 
+    public void setWordState(){
+
+        if(isVowel(player.getCurrentLetterGuess()) && player.getPoints() == 0){
+            System.out.println("You dont have any points to buy a vowel");
+        }
+        else if(isVowel(player.getCurrentLetterGuess()) && player.getPoints() > 0) {
+            setPlayerPoints();
+            player.addPoints(-1);
+        }
+        else if(!isVowel(player.getCurrentLetterGuess()) && !wordState.contains(player.getCurrentLetterGuess())) {
+            setPlayerPoints();
+        }
+        else{
+            wrongGuesses.add(player.getCurrentLetterGuess());
+        }
+
+    }
+
+    public void printWordState(){
         drawHangman();
 
         System.out.println("Hangman word   -> " + toString(wordState));
-        System.out.println("wrong guesses  -> " + toString(wrongGuesses));
-        System.out.println("player points  -> " + player.getPoints() + " points");
+        System.out.println("Wrong guesses  -> " + toString(wrongGuesses));
+        System.out.println("Player points  -> " + player.getPoints() + " points");
     }
 
     // MISC METHODs==================================================

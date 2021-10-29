@@ -9,7 +9,7 @@ public class Main {
     static Word word;
     static Player player1;
     static HangMan newGame;
-    static GameState game;
+    static GameState game = new GameState(newGame, player1);
 
     static String killScan;
 
@@ -29,7 +29,7 @@ public class Main {
         System.out.println();
     }
 
-    static void mainMenu() throws FileNotFoundException {
+    static void mainMenu()  {
 
         System.out.print("Please enter your name: ");
         String name = scan.nextLine();
@@ -56,7 +56,6 @@ public class Main {
                     twoPlayerMenu();
                     break;
                 case 3:
-                    System.out.println("DID NOT GET THIS TO WORK :(");
                     continueSavedGame();
                     break;
                 case 4:
@@ -67,7 +66,7 @@ public class Main {
         }
     }
 
-    static void singlePlayerMenu() throws FileNotFoundException {
+    static void singlePlayerMenu()  {
 
         System.out.println("------------------------------------------------");
         System.out.println("            S I N G L E   P L A Y E R           ");
@@ -112,7 +111,7 @@ public class Main {
         }
     }
 
-    static void twoPlayerMenu() throws FileNotFoundException {
+    static void twoPlayerMenu()  {
 
         System.out.println("------------------------------------------");
         System.out.println("            T W O   P L A Y E R           ");
@@ -131,8 +130,9 @@ public class Main {
             switch (choice){
                 case 1:
                     createNewGame(true);
-                    killScan = scan.nextLine();
+                    scan.nextLine();
                     runGame();
+                    break;
                 case 2:
                     run = false;
             }
@@ -140,12 +140,31 @@ public class Main {
     }
 
     //Game State methods______________________________
-    static void continueSavedGame(){
+    static void continueSavedGame()  {
+
+
         game.setFilePathName("resources/savedGame.csv");
         game.loadGameState();
+
+        player1 = game.getPlayer();
+        newGame = game.getGame();
+
+        /*
+        System.out.println("PLAYER INFO---------------------");
+        System.out.println("Name:           " + player1.getName());
+        System.out.println("Current guess:  " + player1.getCurrentLetterGuess());
+        System.out.println("Num of guesses: " + player1.getNumOfGuesses());
+        System.out.println("GAME INFO---------------------");
+        System.out.println("Hangman word:   " + newGame.getHangManWord());
+        System.out.println("Wrong guesses:  " + newGame.getWrongGuesses());
+        System.out.println("Word state:     " + newGame.getWordStateAsString());
+        System.out.println("games played:   " + HangMan.getNumOfGamesPlayed());
+        */
+        runGame();
     }
 
-    static void saveGame() throws FileNotFoundException {
+    static void saveGame()  {
+
 
         game.setFilePathName("resources/savedGame.csv");
         game.saveGameState();
@@ -157,60 +176,115 @@ public class Main {
         if (twoPlayerMode){
             player1.resetPoints();
             System.out.println("ENTER THE HANGMAN WORD:");
-            String playerWord = scan.next();
+            String playerWord = scan.next() + scan.nextLine();
+            word = new Word(playerWord);
+            newGame = new HangMan(player1, word.getWord());
+            System.out.println( "\n\n\n\n\n\n\n\n\n\n\n\n\n\n" +
+                                "\n\n\n\n\n\n\n\n\n\n\n\n\n\n" +
+                                "\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
 
-            newGame = new HangMan(player1, playerWord);
-            System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
         }
         else{
             player1.resetPoints();
             newGame = new HangMan(player1, word.getWord());
         }
-
     }
 
-    static void runGame() throws FileNotFoundException {
-        game = new GameState(newGame, player1);
+    static void runGame() {
+
         System.out.println("---------------------------------------------");
-        System.out.println( "If at anytime you want to quit\n" +
-                            "type \'13\'");
+        System.out.println( "If at anytime you want to exit\n" +
+                            "type \'1\'");
+        System.out.println( "If you want to save and exit\n" +
+                            "type \'2\'");
+        System.out.println( "Buy a letter for 1 point\n" +
+                            "type \'3\'");
+        System.out.println( "To make a guess for the whole word\n" +
+                            "just type it in");
         System.out.println("---------------------------------------------");
         System.out.println();
-        newGame.setWordState();
 
-        while (true){
+
+        newGame.printWordState();
+
+        boolean run = true;
+
+        while (run){
 
             if (newGame.getWrongGuesses().size() == 6){
+
                 System.out.println("---------------------------------------------");
                 System.out.println("The word was: " + newGame.getHangManWord());
-                System.out.println("Player Score: " + player1.getScore());
                 System.out.println("Y O U   L O S T");
                 System.out.println("---------------------------------------------");
                 break;
             }
-
             if (!newGame.getHangManWord().equals(newGame.getWordStateAsString())){
+
                 System.out.println("Make a guess: ");
-                String guess = scan.nextLine();
+                String guess = scan.next();
+                guess += scan.nextLine();
+                switch (guess){
+                    case "1":
+                        run = false;
+                        break;
+                    case "2":
+                        run = false;
+                        saveGame();
+                        break;
+                    case "3":
+                        newGame.buyAletter();
+                        newGame.setWordState();
+                        newGame.printWordState();
+                        break;
+                    default:
+                        if(guess.length() == 1){
+                            player1.makeAGuess(guess);
+                            newGame.setWordState();
+                            newGame.printWordState();
+                        }
+                        else if (guess.length() != newGame.getHangManWord().length()){
+                            System.out.println("The guess have to be the same lenght as the word!");
+                        }
+                        else if (guess.length() == newGame.getHangManWord().length()){
+                            if (player1.getPoints() == 0) {
+                                System.out.println("It cost 1 point to make a guess on the word");
+                            }
+                            else if (guess.equals(newGame.getHangManWord())){
+                                player1.addPoints(1);
+                                player1.setScore();
+                                System.out.println("---------------------------------------------");
+                                System.out.println("Player Score: " + player1.getScore());
+                                System.out.println("Y O U   G U E S S E S   R I G H T");
+                                System.out.println("Y O U   W O N  ! ! !");
+                                System.out.println("---------------------------------------------");
+                                run = false;
+                                break;
+                            }
+                            else{
+                                System.out.println("Good guess, but it's not right!");
+                                player1.addPoints(-1);
+                                newGame.printWordState();
+                                break;
+                            }
+                        }
 
-                if (guess.equals("13")){
-                    break;
                 }
-
-                player1.makeAGuess(guess);
-                newGame.setWordState();
             }
             else{
+
+                player1.setScore();
                 System.out.println("---------------------------------------------");
                 System.out.println("Player Score: " + player1.getScore());
                 System.out.println("Y O U   W O N  ! ! !");
                 System.out.println("---------------------------------------------");
                 break;
             }
-            saveGame();
+
 
 
         }
+        player1.setCurrentLetterGuess(' ');
         System.out.println();
     }
 
@@ -235,8 +309,26 @@ public class Main {
         return returnNum;
     }
 
+    static void testGame(){
 
-    public static void main(String[] args) throws FileNotFoundException {
+        word = new Word("Trouble");
+        player1 = new Player("John", 1);
+        newGame = new HangMan(player1, word.getWord());
+
+        player1.makeAGuess("a");
+        newGame.setWordState();
+        player1.makeAGuess("o");
+        newGame.setWordState();
+        player1.makeAGuess("b");
+        newGame.setWordState();
+        newGame.buyAletter();
+        newGame.setWordState();
+    }
+
+
+    public static void main(String[] args)  {
+
+        //testGame();
 
 
         game = new GameState(newGame, player1);

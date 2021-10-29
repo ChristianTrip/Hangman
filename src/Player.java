@@ -21,6 +21,10 @@ public class Player {
 
     // GETTERS & SETTERS ================================================
 
+    public void addLives(int live){
+        this.lives += live;
+    }
+
     public void setNumOfGuesses(int numOfGuesses) {
         this.numOfGuesses = numOfGuesses;
     }
@@ -29,8 +33,8 @@ public class Player {
         return name;
     }
 
-    public void setScore(int score) {
-        this.score = score + points + lives;
+    public void setScore() {
+        this.score = points + Main.newGame.getHangManWord().length() + lives;
     }
 
     public int getScore() {
@@ -49,6 +53,10 @@ public class Player {
         if (this.points > 0){
             this.points += points;
         }
+    }
+
+    public void setCurrentLetterGuess(char currentLetterGuess) {
+        this.currentLetterGuess = currentLetterGuess;
     }
 
     public void resetPoints(){
